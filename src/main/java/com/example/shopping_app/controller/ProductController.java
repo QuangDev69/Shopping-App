@@ -77,11 +77,9 @@ public class ProductController {
         // Kiểm tra xem thư mục upload đã tồn tại hay chưa, nếu chưa thì tạo mới
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir); // Tạo thư mục
-            System.out.println("Haha"); // In ra console thông báo đã tạo thư mục
         }
         // Tạo đối tượng Path cho file đích để lưu file được upload
         Path destination = Paths.get(uploadDir.toString(), uniqueFilename);
-        System.out.println("Destination: "+ destination); // In ra đường dẫn file đích
 
         // Sao chép file từ luồng nhập của file đến đích, ghi đè file nếu đã tồn tại
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
