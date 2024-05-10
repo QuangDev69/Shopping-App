@@ -22,6 +22,6 @@ public class ProductDTO {
     private float price;
     private String thumbnail;
     private String description;
-    private String categoryId;
+    private Long categoryId;
     private List<MultipartFile> files;
 }

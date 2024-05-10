@@ -1,8 +1,16 @@
 package com.example.shopping_app.controller;
 
 
+import com.example.shopping_app.Exception.InvalidParamException;
 import com.example.shopping_app.dto.ProductDTO;
+import com.example.shopping_app.dto.ProductImageDTO;
+import com.example.shopping_app.model.Product;
+import com.example.shopping_app.service.ProductService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +25,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("products")
-
+@RequestMapping("${api.prefix}/products")
+@RequiredArgsConstructor
 public class ProductController {
+    private final ProductService productService;
 
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
 
     @GetMapping("")
-    public ResponseEntity<String> getAllProduct(@RequestParam("page") int page, @RequestParam("limit") int limit) {
-        return ResponseEntity.ok(String.format("Products!... page = %d, limit = %d", page, limit));
+    public ResponseEntity< List<Product>> getAllProduct(@RequestParam("page") int page, @RequestParam("limit") int limit) {
+
+        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
+        Page<Product> productPage = productService.getAllProducts(pageRequest);
+        int totalPage= productPage.getTotalPages();
+        List<Product> products= productPage.getContent();
+        return ResponseEntity.ok(products);
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -44,7 +59,13 @@ public class ProductController {
                 return ResponseEntity.badRequest().body(errMessage);
             }
             List<MultipartFile> files = productDTO.getFiles();
-            for(MultipartFile file : files){
+            files = files == null ? new ArrayList<MultipartFile>() : files;
+            if(files.size() <= 5 ) {
+                Product newProduct = productService.createProduct(productDTO);
+                for(MultipartFile file : files){
+                    if(file.getSize() == 0){
+                        continue;
+                    }
                     if (file.getSize() > MAX_FILE_SIZE) {
                         return ResponseEntity.badRequest().body("File size should not exceed 10MB");
                     }
@@ -54,14 +75,19 @@ public class ProductController {
                                 .body("File must be an image");
                     }
                     String filename = storeFile(file);
-                    System.out.println("filename: "+filename);
+                    productService.createProductImage(
+                            newProduct.getId(),
+                            ProductImageDTO.builder().imageUrl(filename).build()
+                    );
+                }
+                return ResponseEntity.ok("insert product successfully" );
             }
-            return ResponseEntity.ok("insert product successfully" );
+            else throw new InvalidParamException("Number of images must be less than 5");
+
+
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-
     }
 
     private String storeFile(MultipartFile file ) throws IOException {
