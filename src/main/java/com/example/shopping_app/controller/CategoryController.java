@@ -2,7 +2,7 @@ package com.example.shopping_app.controller;
 
 
 import com.example.shopping_app.dto.CategoryDTO;
-import com.example.shopping_app.model.Category;
+import com.example.shopping_app.entity.Category;
 import com.example.shopping_app.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

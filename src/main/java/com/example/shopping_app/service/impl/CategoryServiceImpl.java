@@ -1,7 +1,7 @@
 package com.example.shopping_app.service.impl;
 
 import com.example.shopping_app.dto.CategoryDTO;
-import com.example.shopping_app.model.Category;
+import com.example.shopping_app.entity.Category;
 import com.example.shopping_app.repository.CategoryRepository;
 import com.example.shopping_app.service.CategoryService;
 import lombok.RequiredArgsConstructor;

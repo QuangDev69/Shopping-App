@@ -1,9 +1,9 @@
 package com.example.shopping_app.service.impl;
 
-import com.example.shopping_app.Exception.DataNotFoundException;
+import com.example.shopping_app.Exceptional.DataNotFoundException;
 import com.example.shopping_app.dto.UserDTO;
-import com.example.shopping_app.model.Role;
-import com.example.shopping_app.model.User;
+import com.example.shopping_app.entity.Role;
+import com.example.shopping_app.entity.User;
 import com.example.shopping_app.repository.RoleRepository;
 import com.example.shopping_app.repository.UserRepository;
 import com.example.shopping_app.service.UserService;

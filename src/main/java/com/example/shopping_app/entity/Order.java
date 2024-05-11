@@ -1,10 +1,9 @@
-package com.example.shopping_app.model;
+package com.example.shopping_app.entity;
 
 
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -39,7 +38,7 @@ public class Order {
     private String note;
 
     @Column(name="order_date")
-    private LocalDateTime orderDate;
+    private Date orderDate;
 
     @Column(name = "status")
     private String status;

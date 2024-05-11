@@ -1,12 +1,12 @@
 package com.example.shopping_app.service.impl;
 
-import com.example.shopping_app.Exception.DataNotFoundException;
-import com.example.shopping_app.Exception.InvalidParamException;
+import com.example.shopping_app.Exceptional.DataNotFoundException;
+import com.example.shopping_app.Exceptional.InvalidParamException;
 import com.example.shopping_app.dto.ProductDTO;
 import com.example.shopping_app.dto.ProductImageDTO;
-import com.example.shopping_app.model.Category;
-import com.example.shopping_app.model.Product;
-import com.example.shopping_app.model.ProductImage;
+import com.example.shopping_app.entity.Category;
+import com.example.shopping_app.entity.Product;
+import com.example.shopping_app.entity.ProductImage;
 import com.example.shopping_app.repository.CategoryRepository;
 import com.example.shopping_app.repository.ProductImageRepository;
 import com.example.shopping_app.repository.ProductRepository;
@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
     public Product updateProduct(long id, ProductDTO productDTO) throws Exception {
 
         Product existingProduct = getProductById(id);
-        if (existingProduct != null) {
+        if (existingProduct != null ) {
             Category existingCategory = categoryRepository.findById(productDTO.getCategoryId())
                     .orElseThrow(() -> new DataNotFoundException("Can not find Category with Id " + productDTO.getCategoryId()));
             existingProduct.setName(productDTO.getName());
@@ -69,20 +69,26 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(long id) {
+    public void deleteProduct(long id) throws Exception {
         Optional<Product> optionalProduct = productRepository.findById(id);
 
-//        if(optionalProduct.isPresent()){
+
+        if (!optionalProduct.isPresent()) {
+            throw new Exception("Product Not Found with id: " + id);
+        }
+        //        if(optionalProduct.isPresent()){
 //            productRepository.delete( optionalProduct.get());
 //
 //        }
         optionalProduct.ifPresent(productRepository::delete);
+
     }
 
     @Override
     public boolean existByName(String name) {
         return productRepository.existsByName(name);
     }
+
     @Override
     public ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) throws Exception {
         // Kiểm tra sản phẩm tồn tại dựa trên productId được cung cấp

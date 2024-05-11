@@ -3,6 +3,8 @@ package com.example.shopping_app.dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Data
 @Builder
 @Getter
@@ -31,6 +33,10 @@ public class OrderDTO {
 
     @NotBlank(message = "Shipping Address not blank")
     private String shippingAddress;
+
+    @NotNull(message = "Shipping date must not be null")
+    private Date shippingDate;
+
 
     @NotBlank(message = "Payment Method not blank")
     private String paymentMethod;
