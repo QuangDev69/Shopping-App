@@ -26,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductImageRepository productImageRepository;
 
     @Override
-    public Product createProduct(ProductDTO productDTO) throws DataNotFoundException {
+    public Product createProduct(ProductDTO productDTO)  {
         Category existingCategory = categoryRepository.findById(productDTO.getCategoryId())
                 .orElseThrow(() -> new DataNotFoundException("Can not find Category with Id " + productDTO.getCategoryId()));
         Product newProduct = Product.builder()
@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getProductById(long productId) throws DataNotFoundException {
+    public Product getProductById(long productId) {
         return productRepository
                 .findById(productId)
                 .orElseThrow(() -> new DataNotFoundException("Can not find Product with id " + productId));
@@ -52,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(long id, ProductDTO productDTO) throws Exception {
+    public Product updateProduct(long id, ProductDTO productDTO)  {
 
         Product existingProduct = getProductById(id);
         if (existingProduct != null ) {
