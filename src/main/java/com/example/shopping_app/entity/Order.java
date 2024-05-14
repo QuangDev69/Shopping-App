@@ -4,6 +4,7 @@ package com.example.shopping_app.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -53,7 +54,7 @@ public class Order {
     private String shippingAddress;
 
     @Column(name = "shipping_date")
-    private Date shippingDate;
+    private LocalDate shippingDate;
 
     @Column(name = "tracking_number")
     private String trackingNumber;
@@ -61,7 +62,7 @@ public class Order {
     @Column(name = "payment_method")
     private String paymentMethod;
 
-    @Column(name = "active")
-    private Boolean active;//thuộc về admin
+    @Column(name = "is_active")
+    private Boolean isActive;//thuộc về admin
 
 }

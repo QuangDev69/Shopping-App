@@ -16,5 +16,5 @@ public interface OrderService {
 
     void deleteOrder(Long id);
 
-    List<Order> getAllOrder(Long userId);
+    List<Order> findByUserId(Long userId);
 }

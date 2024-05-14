@@ -3,6 +3,7 @@ package com.example.shopping_app.dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -35,7 +36,7 @@ public class OrderDTO {
     private String shippingAddress;
 
     @NotNull(message = "Shipping date must not be null")
-    private Date shippingDate;
+    private LocalDate shippingDate;
 
 
     @NotBlank(message = "Payment Method not blank")

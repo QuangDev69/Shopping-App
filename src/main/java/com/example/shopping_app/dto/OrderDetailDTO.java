@@ -10,12 +10,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDetailDTO {
-
     private Long orderId;
     private Long productId;
-    private Long price;
+    private Float price;
     private int numberOfProducts;
-    private int totalMoney;
+    private Float totalMoney;
     private String color;
 
 }

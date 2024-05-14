@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
+
 public class OrderConverter {
     private final TypeMap<OrderDTO, Order> typeMap;
 
@@ -24,5 +24,9 @@ public class OrderConverter {
         Order order = new Order();
         this.typeMap.map(orderDTO, order);
         return order;
+    }
+
+    public void updateEntity(OrderDTO orderDTO, Order order) {
+        this.typeMap.map(orderDTO, order);
     }
 }
