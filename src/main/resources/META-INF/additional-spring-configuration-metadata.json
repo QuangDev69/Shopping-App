@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "messages.basename",
+      "type": "java.lang.String",
+      "description": "Description for messages.basename."
+  }
+] }
