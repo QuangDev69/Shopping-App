@@ -6,6 +6,7 @@ import com.example.shopping_app.dto.ProductImageDTO;
 import com.example.shopping_app.entity.Product;
 import com.example.shopping_app.Exceptional.InvalidParamException;
 import com.example.shopping_app.service.ProductService;
+import com.example.shopping_app.util.LocalizationUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final LocalizationUtil localizationUtil;
 
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
 

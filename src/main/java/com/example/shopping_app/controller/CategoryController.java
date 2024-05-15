@@ -5,6 +5,8 @@ import com.example.shopping_app.dto.CategoryDTO;
 import com.example.shopping_app.entity.Category;
 import com.example.shopping_app.response.CategoryResponse;
 import com.example.shopping_app.service.CategoryService;
+import com.example.shopping_app.util.LocalizationUtil;
+import com.example.shopping_app.util.MessageKeyUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,7 @@ import java.util.Locale;
 @RequestMapping("${api.prefix}/categories")
 public class CategoryController {
     private final CategoryService categoryService;
-    private final LocaleResolver localeResolver;
-    private final MessageSource messageSource;
+    private final LocalizationUtil localizationUtil;
 
     @PostMapping("")
     //@RequestBody helps Spring convert JSON from request body into Java object.
@@ -56,10 +57,10 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long id, HttpServletRequest request, @Valid @RequestBody CategoryDTO categoryDTO) {
-        Locale locale = localeResolver.resolveLocale(request);
         categoryService.updateCategory(id, categoryDTO);
+        String success = localizationUtil.setLocaleMessage(MessageKeyUtil.UPDATE_CATEGORY_SUCCESS);
         return ResponseEntity.ok(CategoryResponse.builder()
-                .message(messageSource.getMessage("category.update.successfully", null, locale))
+                .message(success)
                 .build());
     }
 

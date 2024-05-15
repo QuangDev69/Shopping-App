@@ -3,6 +3,7 @@ package com.example.shopping_app.controller;
 import com.example.shopping_app.dto.OrderDTO;
 import com.example.shopping_app.entity.Order;
 import com.example.shopping_app.service.OrderService;
+import com.example.shopping_app.util.LocalizationUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -19,6 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
+    private final LocalizationUtil localizationUtil;
+
     @PostMapping("")
     public ResponseEntity<?> insertOrder(
             @Valid

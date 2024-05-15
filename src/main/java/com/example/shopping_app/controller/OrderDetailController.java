@@ -6,6 +6,7 @@ import com.example.shopping_app.dto.OrderDetailDTO;
 import com.example.shopping_app.entity.OrderDetail;
 import com.example.shopping_app.response.OrderDetailResponse;
 import com.example.shopping_app.service.OrderDetailService;
+import com.example.shopping_app.util.LocalizationUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,6 +23,7 @@ import java.util.List;
 public class OrderDetailController {
     private final OrderDetailService orderDetailService;
     private final OrderDetailResConverter orderDetailResConverter;
+    private final LocalizationUtil localizationUtil;
 
     @PostMapping("")
     public ResponseEntity<?> insertOrderDetail(
