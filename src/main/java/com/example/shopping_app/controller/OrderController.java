@@ -75,8 +75,16 @@ public class OrderController {
 
         }
         try{
-            Order updateOrder = orderService.updateOrder(orderDTO, orderId);
-            return ResponseEntity.ok(updateOrder);
+            Order exitOrder = orderService.getOrderById(orderId);
+            if(exitOrder.getIsActive()){
+                Order updateOrder = orderService.updateOrder(orderDTO, orderId);
+                return ResponseEntity.ok(updateOrder);
+            }
+            else {
+                return ResponseEntity.badRequest().body("Not found");
+
+            }
+
         }
         catch(Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());

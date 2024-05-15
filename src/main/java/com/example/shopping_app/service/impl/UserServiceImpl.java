@@ -1,6 +1,7 @@
 package com.example.shopping_app.service.impl;
 
 import com.example.shopping_app.Exceptional.DataNotFoundException;
+import com.example.shopping_app.Exceptional.PermissionDenyException;
 import com.example.shopping_app.dto.UserDTO;
 import com.example.shopping_app.entity.Role;
 import com.example.shopping_app.entity.User;
@@ -36,7 +37,10 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByPhoneNumber(phoneNumber)) {
             throw new DataIntegrityViolationException("Phone number already exists");
         }
-        Role newRole = roleRepository.findById(userDTO.getRoleId()).orElseThrow(() -> new DataNotFoundException("Don't have Role..."));
+        Role role = roleRepository.findById(userDTO.getRoleId()).orElseThrow(() -> new DataNotFoundException("Don't have Role..."));
+        if(role.getName().equals(Role.ADMIN)){
+            throw new PermissionDenyException("You can't register an account as an Admin!");
+        }
 
         User newUser = User.builder()
                 .fullName(userDTO.getFullname())
@@ -46,7 +50,7 @@ public class UserServiceImpl implements UserService {
                 .dateOfBirth(userDTO.getDateOfBirth())
                 .facebookAccountId(userDTO.getFacebookAccountId())
                 .googleAccountId(userDTO.getGoogleAccountId())
-                .role(newRole) // Thiết lập Role ngay khi tạo
+                .role(role) // Thiết lập Role ngay khi tạo
                 .build();
         if (userDTO.getFacebookAccountId() == 0 && userDTO.getGoogleAccountId() == 0) {
             String password = userDTO.getPassword();
