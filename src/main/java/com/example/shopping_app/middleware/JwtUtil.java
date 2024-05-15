@@ -3,7 +3,6 @@ package com.example.shopping_app.middleware;
 import com.example.shopping_app.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 
@@ -11,7 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.spec.KeySpec;
 import java.util.*;
 import java.util.function.Function;
 
@@ -20,7 +22,23 @@ import java.util.function.Function;
 public class JwtUtil {
     @Value("${jwt.secretKey}")
     private String secretKey;
+    private static final String SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256";
+    private static final int ITERATION_COUNT = 65536;
+    private static final int KEY_LENGTH = 256; // 256 bits for HS256
 
+    private SecretKey getSigningKey() {
+        try {
+            // Derive a secure key from the base secret using PBKDF2 and correct HMAC algorithm
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM);
+            KeySpec spec = new PBEKeySpec(secretKey.toCharArray(), secretKey.getBytes(), ITERATION_COUNT, KEY_LENGTH);
+            byte[] keyBytes = factory.generateSecret(spec).getEncoded();
+            // Return a key suitable for HMAC-SHA256
+            return Keys.hmacShaKeyFor(keyBytes);
+        } catch (Exception e) {
+            System.err.println("Error generating secure key: " + e.getMessage());
+            throw new RuntimeException("Failed to generate secure key", e);
+        }
+    }
 
     public String generateToken (User user) {
         Map<String, Object> claims = new HashMap<>();
@@ -36,10 +54,8 @@ public class JwtUtil {
             throw new RuntimeException(e.getMessage());
         }
     }
-    private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+
+
     private Claims extractAllClaimsFromToken(String token){
         return Jwts.parser().verifyWith(getSigningKey() ).build().parseSignedClaims(token).getPayload();
     }

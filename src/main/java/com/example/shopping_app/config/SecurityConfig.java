@@ -23,13 +23,15 @@ public class SecurityConfig   {
     //Tao UserDetail Obj
     @Bean
     public UserDetailsService userDetailsService() {
-        return phoneNumber ->  userRepository
+        return phoneNumber ->
+                userRepository
                     .findByPhoneNumber(phoneNumber)
                     .orElseThrow(()-> new UsernameNotFoundException("Cannot find user with phone number: "+phoneNumber));
     }
 
     @Bean
     public PasswordEncoder passwordEncoder (){
+
         return new BCryptPasswordEncoder();
     }
 

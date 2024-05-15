@@ -2,6 +2,7 @@ package com.example.shopping_app.controller;
 
 import com.example.shopping_app.dto.UserDTO;
 import com.example.shopping_app.dto.UserLoginDTO;
+import com.example.shopping_app.entity.User;
 import com.example.shopping_app.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,27 +23,34 @@ public class UserController {
     private final UserService userService;
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO, BindingResult result) {
-        try {
-            if (result.hasErrors()) {
-                List<String> errMessage= result.getFieldErrors()
-                                                .stream()
-                                                .map(FieldError::getDefaultMessage)
-                                                .toList();
-                return ResponseEntity.badRequest().body (errMessage);
-            }
-            if(!userDTO.getPassword().equals(userDTO.getConfirmPassword())){
-                return ResponseEntity.badRequest().body("Not success");
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+                    .toList();
+            return ResponseEntity.badRequest().body(errors);
+        }
 
-            }
-            userService.createUser(userDTO);
-            return ResponseEntity.ok("Register successfully");
-        }catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
+            return ResponseEntity.badRequest().body("Passwords do not match.");
+        }
+
+        try {
+            User createdUser = userService.createUser(userDTO);
+            return ResponseEntity.ok(createdUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login (@Valid @RequestBody UserLoginDTO userLoginDTO) {
-        return ResponseEntity.ok("Success");
+        try {
+            String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
+            return ResponseEntity.ok("Token: "+token);
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
+        }
     }
 }
