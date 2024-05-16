@@ -10,6 +10,7 @@ import com.example.shopping_app.entity.ProductImage;
 import com.example.shopping_app.repository.CategoryRepository;
 import com.example.shopping_app.repository.ProductImageRepository;
 import com.example.shopping_app.repository.ProductRepository;
+import com.example.shopping_app.response.ProductResponse;
 import com.example.shopping_app.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -47,8 +48,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> getAllProducts(PageRequest pageRequest) {
-        return productRepository.findAll(pageRequest);
+    public Page<ProductResponse> getAllProducts(String keyword,
+                                                Long categoryId, PageRequest pageRequest) {
+        // Lấy danh sách sản phẩm theo trang (page), giới hạn (limit), và categoryId (nếu có)
+        Page<Product> productsPage;
+        productsPage = productRepository.searchProducts(categoryId, keyword, pageRequest);
+        return productsPage.map(ProductResponse::fromProduct);
     }
 
     @Override

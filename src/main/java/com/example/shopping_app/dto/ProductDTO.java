@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 
 public class ProductDTO {
     @NotBlank(message = "Can not be empty")
@@ -19,9 +20,8 @@ public class ProductDTO {
 
     @Min(value = 0, message = "Price more than 0")
     @Max(value = 10000, message = "Price less than 10000")
-    private float price;
+    private Float price;
     private String thumbnail;
     private String description;
     private Long categoryId;
-    private List<MultipartFile> files;
 }
