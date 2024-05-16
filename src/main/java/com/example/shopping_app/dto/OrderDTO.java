@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -42,4 +43,5 @@ public class OrderDTO {
     @NotBlank(message = "Payment Method not blank")
     private String paymentMethod;
 
+    private List<CartItemDTO> cartItems;
 }
