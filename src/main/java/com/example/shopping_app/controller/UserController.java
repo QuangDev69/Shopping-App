@@ -1,9 +1,11 @@
 package com.example.shopping_app.controller;
 
+import com.example.shopping_app.Exceptional.DataNotFoundException;
 import com.example.shopping_app.dto.UserDTO;
 import com.example.shopping_app.dto.UserLoginDTO;
 import com.example.shopping_app.entity.User;
 import com.example.shopping_app.response.LoginResponse;
+import com.example.shopping_app.response.UserResponse;
 import com.example.shopping_app.service.UserService;
 import com.example.shopping_app.util.LocalizationUtil;
 import com.example.shopping_app.util.MessageKeyUtil;
@@ -12,10 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -64,6 +63,18 @@ public class UserController {
             return ResponseEntity.badRequest().body(LoginResponse.builder()
                     .message(messFailed)
                     .build());
+        }
+    }
+
+    @GetMapping("/{userId}/details")
+    public ResponseEntity<UserResponse> getUserDetail(@RequestHeader("Authorization") String token){
+        try {
+            String extractToken = token.substring(7);
+            UserResponse user = userService.getUserDetail(extractToken);
+            return ResponseEntity.ok(user);
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
         }
     }
 }

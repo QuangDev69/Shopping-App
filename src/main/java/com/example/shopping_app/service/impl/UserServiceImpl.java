@@ -2,12 +2,14 @@ package com.example.shopping_app.service.impl;
 
 import com.example.shopping_app.Exceptional.DataNotFoundException;
 import com.example.shopping_app.Exceptional.PermissionDenyException;
+import com.example.shopping_app.convert.UserConverter;
 import com.example.shopping_app.dto.UserDTO;
 import com.example.shopping_app.entity.Role;
 import com.example.shopping_app.entity.User;
 import com.example.shopping_app.middleware.JwtUtil;
 import com.example.shopping_app.repository.RoleRepository;
 import com.example.shopping_app.repository.UserRepository;
+import com.example.shopping_app.response.UserResponse;
 import com.example.shopping_app.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserConverter userConverter;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
@@ -79,5 +82,18 @@ public class UserServiceImpl implements UserService {
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("Authentication failed", e);
         }
+    }
+
+    @Override
+    public UserResponse getUserDetail(String token) {
+        if(jwtUtil.isExpireToken(token)){
+            throw new RuntimeException("Token is expire");
+        }
+        String phoneNumber = jwtUtil.extractPhoneNumber(token);
+        Optional<User> user = userRepository.findByPhoneNumber(phoneNumber);
+        if(user.isPresent()) {
+            return userConverter.toResponse(user.get());
+        }
+        else throw new RuntimeException("User not found");
     }
 }
