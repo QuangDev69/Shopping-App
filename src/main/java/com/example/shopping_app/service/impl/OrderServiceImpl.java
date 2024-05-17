@@ -16,6 +16,9 @@ import com.example.shopping_app.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -41,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order newOrder = orderConverter.toEntity(orderDTO);
         newOrder.setUser(existingUser);
-        newOrder.setOrderDate(new Date());
+        newOrder.setOrderDate(LocalDate.now());
         newOrder.setStatus("PENDING");
         newOrder.setIsActive(true);
         LocalDate shippingDate = orderDTO.getShippingDate() != null ? orderDTO.getShippingDate() : LocalDate.now();
@@ -89,5 +92,10 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> findByUserId(Long userId) {
 
         return orderRepository.findByUserId(userId);
+    }
+
+    @Override
+    public Page<Order> findOrderByKeyword(String keyword, Pageable pageable) {
+        return orderRepository.findOrderByKeyword(keyword, pageable);
     }
 }

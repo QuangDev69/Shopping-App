@@ -12,6 +12,7 @@ import com.example.shopping_app.util.MessageKeyUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -75,6 +76,26 @@ public class UserController {
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
+        }
+    }
+    @PutMapping ("/{userId}/details")
+    public ResponseEntity<?> getUserDetail(
+            @RequestHeader("Authorization") String token,
+            @Valid @RequestBody UserDTO userDTO,
+            @PathVariable Long userId
+            ){
+        try {
+
+            String extractToken = token.substring(7);
+            UserResponse user = userService.getUserDetail(extractToken);
+            if(!user.getId().equals(userId)){
+                return ResponseEntity.badRequest().body("Id does not match");
+            }
+            UserResponse updateUser = userService.updateUser(userId, userDTO);
+            return ResponseEntity.ok(updateUser);
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

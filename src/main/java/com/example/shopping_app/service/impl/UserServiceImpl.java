@@ -11,6 +11,7 @@ import com.example.shopping_app.repository.RoleRepository;
 import com.example.shopping_app.repository.UserRepository;
 import com.example.shopping_app.response.UserResponse;
 import com.example.shopping_app.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,9 +30,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserConverter userConverter;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final UserConverter userConverter;
+
 
     @Override
     //Register User
@@ -45,16 +47,8 @@ public class UserServiceImpl implements UserService {
             throw new PermissionDenyException("You can't register an account as an Admin!");
         }
 
-        User newUser = User.builder()
-                .fullName(userDTO.getFullname())
-                .phoneNumber(userDTO.getPhoneNumber())
-                .password(userDTO.getPassword())
-                .address(userDTO.getAddress())
-                .dateOfBirth(userDTO.getDateOfBirth())
-                .facebookAccountId(userDTO.getFacebookAccountId())
-                .googleAccountId(userDTO.getGoogleAccountId())
-                .role(role) // Thiết lập Role ngay khi tạo
-                .build();
+        User newUser = userConverter.toEntity(userDTO);
+        newUser.setRole(role);
         if (userDTO.getFacebookAccountId() == 0 && userDTO.getGoogleAccountId() == 0) {
             String password = userDTO.getPassword();
             String encodedPassword = passwordEncoder.encode(password);
@@ -96,4 +90,39 @@ public class UserServiceImpl implements UserService {
         }
         else throw new RuntimeException("User not found");
     }
+
+    @Override
+    @Transactional
+    public UserResponse updateUser(Long userId, UserDTO userDTO) {
+        User existingUser = userRepository.findById(userId).orElse(null);
+
+        String newPhone = userDTO.getPhoneNumber();
+        assert existingUser != null;
+        if(!existingUser.getPhoneNumber().equals(newPhone) && userRepository.existsByPhoneNumber(newPhone)){
+            throw new DataIntegrityViolationException("Phone number is already exists");
+        }
+        Role role = roleRepository.findById(userDTO.getRoleId())
+                .orElseThrow(() -> new DataNotFoundException("Role not found with id: " + userDTO.getRoleId()));
+
+        if(role.getName().equals(Role.ADMIN)){
+            throw new PermissionDenyException("You cannot update the account to an Admin role!");
+        }
+
+//        existingUser.setRole(role);
+        userConverter.updateEntity(userDTO, existingUser);
+        if (userDTO.getPassword() !=null && userDTO.getConfirmPassword() != null) {
+            if(!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
+                throw new DataIntegrityViolationException("Password does not match");
+            }
+            String password = userDTO.getPassword();
+            String encodedPassword = passwordEncoder.encode(password);
+            existingUser.setPassword(encodedPassword);
+        }
+
+        userRepository.save(existingUser);
+
+        return userConverter.toResponse(existingUser);
+    }
+
+
 }

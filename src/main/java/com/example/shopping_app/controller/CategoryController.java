@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,7 @@ public class CategoryController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Category>> getAllCategory(@RequestParam("page") int page, @RequestParam("limit") int limit) {
+    public ResponseEntity<List<Category>> getAllCategory() {
         List<Category> categories = categoryService.getAllCategory();
         return ResponseEntity.ok(categories);
     }

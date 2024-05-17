@@ -36,8 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        try {
-            if (isBypassToken(request)) {
+        try {if (isBypassToken(request)) {
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -52,6 +51,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 if (phoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     User userDetails = (User) userDetailsService.loadUserByUsername(phoneNumber);
                     if (jwtUtil.validateToken(token, userDetails)) {
+                        System.out.println("token: "+token);
                         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,

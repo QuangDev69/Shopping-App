@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class UserDTO {
     @NotBlank(message = "Fullname is required!")
-    private String fullname;
+    private String fullName;
 
     @NotBlank(message = "Phone Number is required!")
     private String phoneNumber;

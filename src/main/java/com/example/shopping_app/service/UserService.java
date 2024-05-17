@@ -10,4 +10,5 @@ public interface UserService {
     String login(String phoneNumber, String password);
 
     UserResponse getUserDetail(String token);
+    UserResponse updateUser(Long userId, UserDTO userDTO);
 }
