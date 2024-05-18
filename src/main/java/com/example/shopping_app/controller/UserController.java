@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,6 +69,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/details")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<UserResponse> getUserDetail(@RequestHeader("Authorization") String token){
         try {
             String extractToken = token.substring(7);
@@ -79,6 +81,7 @@ public class UserController {
         }
     }
     @PutMapping ("/{userId}/details")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> getUserDetail(
             @RequestHeader("Authorization") String token,
             @Valid @RequestBody UserDTO userDTO,

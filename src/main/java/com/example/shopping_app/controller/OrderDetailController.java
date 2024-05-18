@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,7 @@ public class OrderDetailController {
     private final LocalizationUtil localizationUtil;
 
     @PostMapping("")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> insertOrderDetail(
             @Valid
             @RequestBody OrderDetailDTO orderDetailDTO,
@@ -47,6 +49,7 @@ public class OrderDetailController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> getOrderDetail(@Valid @PathVariable("id") Long id) {
         try{
             OrderDetail orderDetail = orderDetailService.getOrderDetail(id);
@@ -58,6 +61,7 @@ public class OrderDetailController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateOrderDetail(
             @Valid @PathVariable("id") Long id,
             @Valid @RequestBody OrderDetailDTO orderDetailDTO) {
@@ -72,6 +76,7 @@ public class OrderDetailController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteOrderDetail(
              @PathVariable("id") Long id
             ) {

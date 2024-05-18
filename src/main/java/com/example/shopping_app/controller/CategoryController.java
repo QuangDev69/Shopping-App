@@ -30,6 +30,7 @@ public class CategoryController {
 
     @PostMapping("")
     //@RequestBody helps Spring convert JSON from request body into Java object.
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createCategory(
             @Valid
             @RequestBody CategoryDTO categoryDTO,
@@ -51,12 +52,14 @@ public class CategoryController {
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.ok("Delete id: " + id +" success!");
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long id, HttpServletRequest request, @Valid @RequestBody CategoryDTO categoryDTO) {
         categoryService.updateCategory(id, categoryDTO);
         String success = localizationUtil.setLocaleMessage(MessageKeyUtil.UPDATE_CATEGORY_SUCCESS);

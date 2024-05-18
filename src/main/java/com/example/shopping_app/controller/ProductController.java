@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -36,9 +37,10 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    private final LocalizationUtil localizationUtil;
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
+
     //POST http://localhost:8088/v1/api/products
     public ResponseEntity<?> createProduct(
             @Valid @RequestBody ProductDTO productDTO,
@@ -58,8 +60,11 @@ public class ProductController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
     @PostMapping(value = "uploads/{id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     //POST http://localhost:8088/v1/api/products
     public ResponseEntity<?> uploadImages(
             @PathVariable("id") Long productId,
@@ -67,9 +72,9 @@ public class ProductController {
     ){
         try {
             Product existingProduct = productService.getProductById(productId);
-            files = files == null ? new ArrayList<>() : files;
+            files = files == null ? new ArrayList<MultipartFile>() : files;
             if(files.size() > ProductImage.MAXIMUM_IMAGES_PER_PRODUCT) {
-                return ResponseEntity.badRequest().body("Quá 5");
+                return ResponseEntity.badRequest().body("Qua 5");
             }
             List<ProductImage> productImages = new ArrayList<>();
             for (MultipartFile file : files) {
@@ -79,12 +84,12 @@ public class ProductController {
                 // Kiểm tra kích thước file và định dạng
                 if(file.getSize() > 10 * 1024 * 1024) { // Kích thước > 10MB
                     return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-                            .body("quá 5");
+                            .body("Qua size");
                 }
                 String contentType = file.getContentType();
                 if(contentType == null || !contentType.startsWith("image/")) {
                     return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                            .body("Quá 5");
+                            .body("Khong dung dinh dang");
                 }
                 // Lưu file và cập nhật thumbnail trong DTO
                 String filename = storeFile(file); // Thay thế hàm này với code của bạn để lưu file
@@ -97,6 +102,7 @@ public class ProductController {
                 );
                 productImages.add(productImage);
             }
+
             return ResponseEntity.ok().body(productImages);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -184,6 +190,8 @@ public class ProductController {
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<String> deleteProduct(@PathVariable long id) {
         try {
             productService.deleteProduct(id);
@@ -195,6 +203,8 @@ public class ProductController {
 
     //update a product
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<?> updateProduct(
             @PathVariable long id,
             @RequestBody ProductDTO productDTO) {

@@ -29,6 +29,8 @@ public class OrderController {
     private final LocalizationUtil localizationUtil;
 
     @PostMapping("")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+
     public ResponseEntity<?> insertOrder(
             @Valid
             @RequestBody OrderDTO orderDTO,
@@ -51,7 +53,6 @@ public class OrderController {
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-
     public ResponseEntity<?> getOrders(@Valid @PathVariable("userId") Long userId) {
         try {
             List<Order> ordersByUser = orderService.findByUserId(userId);

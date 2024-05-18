@@ -2,6 +2,7 @@ package com.example.shopping_app.service.impl;
 
 import com.example.shopping_app.Exceptional.DataNotFoundException;
 import com.example.shopping_app.Exceptional.InvalidParamException;
+import com.example.shopping_app.convert.ProductConverter;
 import com.example.shopping_app.dto.ProductDTO;
 import com.example.shopping_app.dto.ProductImageDTO;
 import com.example.shopping_app.entity.Category;
@@ -25,17 +26,21 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductImageRepository productImageRepository;
+    private final ProductConverter productConverter;
 
     @Override
     public Product createProduct(ProductDTO productDTO)  {
         Category existingCategory = categoryRepository.findById(productDTO.getCategoryId())
                 .orElseThrow(() -> new DataNotFoundException("Can not find Category with Id " + productDTO.getCategoryId()));
-        Product newProduct = Product.builder()
-                .name(productDTO.getName())
-                .price(productDTO.getPrice())
-                .thumbnail(productDTO.getThumbnail())
-                .category(existingCategory)
-                .build();
+
+        Product newProduct = productConverter.toEntity(productDTO);
+        newProduct.setCategory(existingCategory);
+//        Product newProduct = Product.builder()
+//                .name(productDTO.getName())
+//                .price(productDTO.getPrice())
+//                .thumbnail(productDTO.getThumbnail())
+//                .category(existingCategory)
+//                .build();
         productRepository.save(newProduct);
         return newProduct;
     }
